@@ -87,7 +87,6 @@ motor_config_t load_motor_config ={
 static dji_motor_object_t *sht_motor[SHT_MOTOR_NUM];  // 发射器电机实例
 static float shoot_motor_ref[SHT_MOTOR_NUM]; // shoot电机控制期望值
 static dji_motor_object_t *load_motor;//供弹电机实例
-static float loat_motor_ref;//load motor电机控制期望值
 
 /*函数声明*/
 static void shoot_motor_init();
