@@ -204,6 +204,7 @@ static void chassis_motor_init()
 }
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
 {
+    // int delta = cmd_dt * ?
     //这里应该能直接用measure的编码器值解算
     // yaw_degree = (chassis_motor[YAW_MOTOR]->measure.total_angle - CENTER_ECD_YAW ) * TRIGGER_MOTOR_45_TO_ANGLE;
     // chassis_fdb.yaw_degree = yaw_degree;
