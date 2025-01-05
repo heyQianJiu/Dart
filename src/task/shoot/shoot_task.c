@@ -143,6 +143,12 @@ void shoot_task_entry(void* argument)
                     shoot_motor_ref[i] = 0;
                 }
                 shoot_motor_ref[LOAD_MOTOR] = 0;
+                if(sht_motor[LOAD_MOTOR]->measure.total_round <= 10) {
+                    shoot_fdb.load_status == LOAD_BACK_OK;
+                }else {
+                    shoot_fdb.load_status == LOAD_BACK_ON;
+                }
+
                 break;
 
             case SHOOT_ONE:
@@ -167,7 +173,6 @@ void shoot_task_entry(void* argument)
                 for (uint8_t i = 0; i < SHT_MOTOR_NUM; i++)
                 {
                     dji_motor_relax(sht_motor[i]); // 错误情况电机全部松电
-
                 }
                 shoot_fdb.trigger_status=SHOOT_ERR;
                 break;
