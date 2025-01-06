@@ -399,17 +399,9 @@ menu "RoboMaster Tasks"
                 default n
         endif
 
-    config BSP_USING_TRANSMISSION_TASK
-        bool "Select USING Transmission Task"
-        default y
-
     config BSP_USING_SHOOT_TASK
         bool "Select USING Shoot Task"
         default y
-
-    config BSP_USING_REFEREE_TASK
-            bool "Select USING Referee Task"
-            default y
 
 endmenu
 

@@ -384,7 +384,6 @@
 
 /* RoboMaster Tasks */
 
-#define BSP_USING_EXAMPLE_TASK
 #define BSP_USING_MOTOR_TASK
 #define BSP_USING_CMD_TASK
 #define BSP_USING_CHASSIS_TASK

@@ -25,15 +25,10 @@ rt_thread_t ins_thread_handle;
 #ifdef BSP_USING_CHASSIS_TASK
  rt_thread_t chassis_thread_handle;
 #endif /* BSP_USING_CHASSIS_TASK */
-#ifdef BSP_USING_TRANSMISSION_TASK
- rt_thread_t transmission_thread_handle;
-#endif /* BSP_USING_TRANSMISSION_TASK */
 #ifdef BSP_USING_SHOOT_TASK
  rt_thread_t shoot_thread_handle;
 #endif /* BSP_USING_SHOOT_TASK */
-#ifdef BSP_USING_REFEREE_TASK
- rt_thread_t referee_thread_handle;
-#endif /* BSP_USING_SHOOT_TASK */
+
 /**
  * @brief 初始化机器人任务,所有持续运行的任务都在这里初始化
  *
