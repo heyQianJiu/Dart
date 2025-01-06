@@ -54,32 +54,32 @@ static struct load_controller_t{
 motor_config_t shoot_motor_config[SHT_MOTOR_NUM] ={
     {
         .motor_type = M3508,
-        .can_name = CAN_GIMBAL,//待定
+        .can_name = CAN_CHASSIS,//待定
         .rx_id = SHOOT1_MOTOR_ID,
         .controller = &sht_controller[SHOOT_MOTOR1],
     },
     {
         .motor_type = M3508,
-        .can_name = CAN_GIMBAL,
+        .can_name = CAN_CHASSIS,
         .rx_id = SHOOT2_MOTOR_ID,
         .controller = &sht_controller[SHOOT_MOTOR2],
     },
     {
         .motor_type = M3508,
-        .can_name = CAN_GIMBAL,
+        .can_name = CAN_CHASSIS,
         .rx_id = SHOOT3_MOTOR_ID,
         .controller = &sht_controller[SHOOT_MOTOR3],
     },
     {
     .motor_type = M3508,
-    .can_name = CAN_GIMBAL,
+    .can_name = CAN_CHASSIS,
     .rx_id = SHOOT4_MOTOR_ID,
     .controller = &sht_controller[SHOOT_MOTOR4],
     }
 };
 motor_config_t load_motor_config ={
     .motor_type = M3508,
-    .can_name = CAN_GIMBAL,
+    .can_name = CAN_CHASSIS,
     .rx_id = LOAD_MOTOR_ID,
     .controller = &load_controller
 };

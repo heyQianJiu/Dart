@@ -39,7 +39,7 @@ static void chassis_motor_init();
 /*定时器初始化*/
 static int TIM_Init(void);
 /*角度数据*/
-static float pitch_degree,yaw_degree;
+static float pitch_angle,yaw_angle;
 
 
 // static void absolute_cal(struct chassis_cmd_msg *cmd, float angle);
@@ -88,7 +88,7 @@ void chassis_thread_entry(void *argument)
                 break;
             case CHASSIS_INIT://角度环控制的
                 motor_ref[YAW_MOTOR] = CENTER_ECD_YAW;
-                motor_ref[PITCH_MOTOR] =PITCH_INIT_DEGREE;
+                motor_ref[PITCH_MOTOR] =PITCH_INIT_ANGLE;
                 if(chassis_motor[YAW_MOTOR]->measure.ecd - CENTER_ECD_YAW <= 20) {
                     chassis_fdb.back_mode = BACK_IS_OK;
                 }else {
@@ -204,13 +204,12 @@ static void chassis_motor_init()
 }
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
 {
-    // int delta = cmd_dt * ?
-    //这里应该能直接用measure的编码器值解算
+    yaw_angle = chassis_motor[YAW_MOTOR]->measure.total_angle * YAW_GEAR_RATIO;// 总角度 * 减速比 = 实际角度,正为顺时针,负为逆时针
     // yaw_degree = (chassis_motor[YAW_MOTOR]->measure.total_angle - CENTER_ECD_YAW ) * TRIGGER_MOTOR_45_TO_ANGLE;
-    // chassis_fdb.yaw_degree = yaw_degree;
-    // chassis_fdb.pitch_degree = pitch_degree;
 
-    // chassis_motor[PITCH_MOTOR]->measure.total_angle;
+
+    chassis_fdb.yaw_degree = yaw_angle;
+    // chassis_fdb.pitch_degree = pitch_angle;
     return 0;
 }
 int TIM_Init(void)
