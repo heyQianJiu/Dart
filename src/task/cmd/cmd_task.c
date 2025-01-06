@@ -22,7 +22,6 @@ static struct shoot_cmd_msg  shoot_cmd;
 static struct shoot_fdb_msg  shoot_fdb;
 static struct chassis_cmd_msg chassis_cmd;
 static struct chassis_fdb_msg chassis_fdb;
-// static struct referee_fdb_msg referee_fdb;
 
 
 static void cmd_pub_init(void);
@@ -180,7 +179,7 @@ static void remote_to_cmd_sbus(void)
         switch(rc_now->sw2)
         {
             case RC_UP:
-                chassis_cmd.ctrl_mode = CHASSIS_RELAX;
+                // chassis_cmd.ctrl_mode = CHASSIS_RELAX;
                 shoot_cmd.ctrl_mode=SHOOT_STOP;
             break;
             case RC_MI:
@@ -188,7 +187,7 @@ static void remote_to_cmd_sbus(void)
                 {
                     shoot_cmd.friction_status = 1;
                 }
-                if(rc_now->ch6> LOAD_VALUE ) {
+                if(rc_now->ch3> LOAD_VALUE ) {
                     if(shoot_fdb.load_status == LOAD_BACK_OK) {//判断是否可以发射
                         shoot_cmd.ctrl_mode = SHOOT_ONE;//单发模式，在这里完成供弹，并且定义挡板回归到最初位置的的状态量
                     }
