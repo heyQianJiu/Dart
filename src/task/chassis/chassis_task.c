@@ -175,7 +175,7 @@ motor_config_t chassis_motor_config[2] =
             .controller = &chassis_controller[YAW_MOTOR],
         },
     {
-        .motor_type = M3508,
+        .motor_type = M2006,
         .can_name = CAN_CHASSIS,
         .rx_id = 0x202,
         .controller = &chassis_controller[PITCH_MOTOR],
