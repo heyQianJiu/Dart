@@ -141,12 +141,13 @@ void shoot_task_entry(void* argument)
                 for(int i=0;i<SHT_MOTOR_NUM;i++) {
                     shoot_motor_ref[i] = 0;
                 }
-                shoot_motor_ref[LOAD_MOTOR] = -1000;//拨弹电机下行
-                if(sht_motor[LOAD_MOTOR]->measure.total_round <= 10) {
-                    shoot_fdb.load_status == LOAD_BACK_OK;
-                }else {
-                    shoot_fdb.load_status == LOAD_BACK_ON;
-                }
+            /*load not signed up*/
+                // shoot_motor_ref[LOAD_MOTOR] = -1000;//拨弹电机下行
+                // if(sht_motor[LOAD_MOTOR]->measure.total_round <= 10) {
+                //     shoot_fdb.load_status == LOAD_BACK_OK;
+                // }else {
+                //     shoot_fdb.load_status == LOAD_BACK_ON;
+                // }
 
                 break;
 
@@ -163,7 +164,8 @@ void shoot_task_entry(void* argument)
                 shoot_motor_ref[SHOOT_MOTOR2] = ref_rpm_1;
                 shoot_motor_ref[SHOOT_MOTOR3] = -ref_rpm_2;//摩擦轮常转
                 shoot_motor_ref[SHOOT_MOTOR4] = ref_rpm_2;
-                shoot_motor_ref[LOAD_MOTOR] = ref_load;//拨弹电机上行
+            /*load not signed up*/
+                // shoot_motor_ref[LOAD_MOTOR] = ref_load;//拨弹电机上行
 
                 shoot_fdb.load_status = LOADING;
                 break;
