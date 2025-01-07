@@ -10,7 +10,7 @@
 #include "rm_algorithm.h"
 #include "rm_module.h"
 #include "rm_task.h"
-#include "src/modules/rc/sbus/rc_sbus.c"
+// #include "src/modules/rc/sbus/rc_sbus.c"
 
 #define DBG_TAG   "rm.task"
 #define DBG_LVL DBG_INFO
@@ -138,8 +138,8 @@ static void remote_to_cmd_sbus(void)
 
     if (chassis_cmd.ctrl_mode==CHASSIS_INIT||chassis_cmd.ctrl_mode==CHASSIS_RELAX)
     {//归中
-        chassis_cmd.pitch = PITCH_INIT_DEGREE;
-        chassis_cmd.yaw = YAW_INIT_DEGREE;
+        chassis_cmd.pitch = PITCH_INIT_ANGLE;
+        chassis_cmd.yaw = YAW_INIT_ANGLE;
     }
     switch (rc_now->sw1)
     {//底盘 UP：使能 DOWN：失能
