@@ -76,12 +76,12 @@ motor_config_t shoot_motor_config[SHT_MOTOR_NUM] ={
     .controller = &sht_controller[SHOOT_MOTOR4],
     }
 };
-motor_config_t load_motor_config ={
-    .motor_type = M3508,
-    .can_name = CAN_CHASSIS,
-    .rx_id = LOAD_MOTOR_ID,
-    .controller = &load_controller
-};
+// motor_config_t load_motor_config ={
+//     .motor_type = M3508,
+//     .can_name = CAN_CHASSIS,
+//     .rx_id = LOAD_MOTOR_ID,
+//     .controller = &load_controller
+// };
 
 static dji_motor_object_t *sht_motor[SHT_MOTOR_NUM];  // 发射器电机实例
 
@@ -231,7 +231,7 @@ sht_controller[SHOOT_MOTOR4].pid_speed = pid_register(&shoot4_speed_config);
     sht_motor[SHOOT_MOTOR3] = dji_motor_register(&shoot_motor_config[SHOOT_MOTOR3], shoot_control_3);
     sht_motor[SHOOT_MOTOR4] = dji_motor_register(&shoot_motor_config[SHOOT_MOTOR3], shoot_control_4);
 
-    load_motor = dji_motor_register(&load_motor_config,load_motor);
+    // load_motor = dji_motor_register(&load_motor_config,load_motor);
 }
 
 /* ---------------------------------- shoot电机控制算法---------------------------------------------------------------------------------------- */
