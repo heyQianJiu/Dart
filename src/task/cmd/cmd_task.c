@@ -10,7 +10,7 @@
 #include "rm_algorithm.h"
 #include "rm_module.h"
 #include "rm_task.h"
-// #include "src/modules/rc/sbus/rc_sbus.c"
+#include "src/modules/rc/sbus/rc_sbus.c"
 
 #define DBG_TAG   "rm.task"
 #define DBG_LVL DBG_INFO
