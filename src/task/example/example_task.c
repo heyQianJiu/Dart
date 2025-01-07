@@ -157,10 +157,10 @@ void example_thread_entry(void *argument)
         //     shoot_motor_ref[i]=reflection;
         // }
         reflection= 9000;
-        shoot_motor_ref[0]=-reflection;
-        shoot_motor_ref[1]=reflection;
-        shoot_motor_ref[2]=-6000;
-        shoot_motor_ref[3]=6000;
+        shoot_motor_ref[0]=-9000;
+        shoot_motor_ref[1]=9000;
+        shoot_motor_ref[2]=-8000;
+        shoot_motor_ref[3]=8000;
 
 
 
