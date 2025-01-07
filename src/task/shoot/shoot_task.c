@@ -43,7 +43,6 @@ static void shoot_sub_pull(void);
 /*pid环数结构体*/
 static struct shoot_controller_t{
     pid_obj_t *pid_speed;
-    // pid_obj_t *pid_angle;
 }sht_controller[SHT_MOTOR_NUM];
 static struct load_controller_t{
     pid_obj_t *pid_speed;
