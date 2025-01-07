@@ -143,21 +143,24 @@ static void remote_to_cmd_sbus(void)
     }
     switch (rc_now->sw1)
     {//底盘 UP：使能 DOWN：失能
-    case RC_UP:
-        chassis_cmd.ctrl_mode = CHASSIS_OPEN_LOOP;
-        /*控制pitch、yaw,系数待定*/
-        chassis_cmd.vw_yaw = 2000*(float)(rc_now->ch1) / 784.0;
-        chassis_cmd.vw_pitch = 2000*(float)(rc_now->ch2) / 784.0;;
-        break;
-    case RC_MI://先归中再失能
-        if(chassis_cmd.last_mode != CHASSIS_INIT) {
-            chassis_cmd.ctrl_mode = CHASSIS_INIT;
-        }
-        else if(chassis_fdb.back_mode == BACK_IS_OK)
-        {
+        case RC_UP:
+            chassis_cmd.ctrl_mode = CHASSIS_OPEN_LOOP;
+            /*控制pitch、yaw,系数待定*/
+            chassis_cmd.vw_yaw = 2000*(float)(rc_now->ch1) / 784.0;
+            chassis_cmd.vw_pitch = 2000*(float)(rc_now->ch2) / 784.0;;
+            break;
+        case RC_MI://先归中再失能
+            if(chassis_cmd.last_mode != CHASSIS_INIT) {
+                chassis_cmd.ctrl_mode = CHASSIS_INIT;
+            }
+            else if(chassis_fdb.back_mode == BACK_IS_OK)
+            {
+                chassis_cmd.ctrl_mode = CHASSIS_RELAX;
+            }
+            break;
+        default:
             chassis_cmd.ctrl_mode = CHASSIS_RELAX;
-        }
-        break;
+
 
     }
     /* 因为左拨杆值会影响到底盘RELAX状态，所以后判断 */
@@ -170,6 +173,8 @@ static void remote_to_cmd_sbus(void)
             shoot_cmd.ctrl_mode = SHOOT_STOP;
             shoot_cmd.friction_status = 0;
             break;
+        default:
+            chassis_cmd.ctrl_mode = CHASSIS_RELAX;
 
     }
     /*--------------------------------------------------发射状态机--------------------------------------------------------------*/
@@ -200,8 +205,15 @@ static void remote_to_cmd_sbus(void)
                     case RC_MI:
                         shoot_cmd.friction_speed = LOW_FREQUENCY;
                     break;
+                    default:
+                        shoot_cmd.friction_speed = HIGH_FREQUENCY;
+                    break;
+
                 }
                 break;
+            default:
+                shoot_cmd.ctrl_mode=SHOOT_STOP;
+            break;
         }
     }
 
