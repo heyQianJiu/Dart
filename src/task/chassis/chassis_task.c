@@ -96,11 +96,13 @@ void chassis_thread_entry(void *argument)
                 }
 
             default:
-                for (uint8_t i = 0; i < 2; i++)
-                {
-                    dji_motor_relax(chassis_motor[i]);
-                }
-            break;
+            //     for (uint8_t i = 0; i < 2; i++)
+            //     {
+            //         dji_motor_relax(chassis_motor[i]);
+            //     }
+            // break;
+                motor_ref[YAW_MOTOR] = 1000;
+                motor_ref[PITCH_MOTOR] = 1000;
         }
 
         /* 更新发布该线程的msg */
@@ -171,13 +173,13 @@ motor_config_t chassis_motor_config[2] =
         {
             .motor_type = M3508,
             .can_name = CAN_CHASSIS,
-            .rx_id = 0x201,
+            .rx_id = 0x208,
             .controller = &chassis_controller[YAW_MOTOR],
         },
     {
         .motor_type = M2006,
         .can_name = CAN_CHASSIS,
-        .rx_id = 0x202,
+        .rx_id = 0x207,
         .controller = &chassis_controller[PITCH_MOTOR],
         }
     };
