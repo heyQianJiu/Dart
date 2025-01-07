@@ -14,21 +14,6 @@
 #define CAN_CHASSIS    "can1"
 #define CAN_GIMBAL     "can2"
 
-/* 磁力计所挂载的 i2c 设备名称(软件i2c) Notice: PA8 --> 8; PC9 --> 41 */
-#define I2C_MAG        "i2c1"
-
-/* 陀螺仪所挂载的 SPI 设备名称及 CS 引脚 */
-#define SPI_GYRO       "spi1"
-#define SPI_GYRO_CS    16
-
-/* 加速度计所挂载的 SPI 设备名称及 CS 引脚 */
-#define SPI_ACC        "spi1"
-#define SPI_ACC_CS     4
-
-/* 弹仓盖舵机所挂载的 PWM 设备及通道号 */
-#define PWM_COVER        "pwm1"
-#define PWM_COVER_CH     2
-
 /* 遥控器所挂载的 usart 设备名称 */
 #define USART_RC       "uart3"
 
@@ -54,8 +39,11 @@
 #define RC_DN_VALUE 15
 
 /* ---------------------------------- 底盘相关 ---------------------------------- */
-
-/******** 底盘电机使用3508 *******/
+#define SCREW_LEN  261.2f
+#define ABOVE_POLE_LEN 482.5f
+#define HEIGHT_LEN 304.3f
+#define BOTTOM_POLE_LEN 357.2f
+/******** YAW 3508 *******/
 /* 3508底盘电机减速比 */
 #define YAW_GEAR_RATIO (1.0f/19.0f)
 /*M2006的减速比为36:1，因此转轴旋转45度，要在转子的基础上乘36倍*/
@@ -67,7 +55,6 @@
 
 /* 3508单个电机速度极限，单位是分钟每转，8347rpm = 3500mm/s */
 #define MAX_WHEEL_RPM        9000
-
 
 /* 底盘旋转最大速度，单位是度每秒 */
 #define MAX_CHASSIS_VR_SPEED 8
@@ -153,7 +140,7 @@
 #define SHOOT4_MOTOR_ID 0x204
 // #define SHOOT5_MOTOR_ID 0x205
 // #define SHOOT6_MOTOR_ID 0x206
-#define LOAD_MOTOR_ID 0x200//to be define
+#define LOAD_MOTOR_ID 0x205//to be define
 
 /** SBUS遥控器发射速度 **/
 #define SBUS_FRICTION_LAUNCH_SPEED 5000
@@ -163,12 +150,6 @@
 #define SBUS_FRICTION_AUTO_SPEED_L 3500
 #define SBUS_FRICTION_AUTO_SPEED_H 7000
 
-/** DBUS遥控器发射速度 **/
-#define DBUS_FRICTION_LAUNCH_SPEED 7000
-#define DBUS_SHOOT_REVERSE_SPEED 3000
-/** COUNTINUE模式参数 **/
-#define DBUS_FRICTION_AUTO_SPEED_L 3500
-#define DBUS_FRICTION_AUTO_SPEED_H 7000
 /* -------------------------------- 发射电机PID参数 ------------------------------- */
 // TODO: 速度期望应改为变量应对速度切换。初次参数调整已完成
 /* 右摩擦轮M3508电机PID参数 */
@@ -201,5 +182,18 @@
 #define TRIGGER_KD_A           0
 #define TRIGGER_INTEGRAL_A     0
 #define TRIGGER_MAX_A          10000
+
+
+/* 磁力计所挂载的 i2c 设备名称(软件i2c) Notice: PA8 --> 8; PC9 --> 41 */
+#define I2C_MAG        "i2c1"
+/* 陀螺仪所挂载的 SPI 设备名称及 CS 引脚 */
+#define SPI_GYRO       "spi1"
+#define SPI_GYRO_CS    16
+/* 加速度计所挂载的 SPI 设备名称及 CS 引脚 */
+#define SPI_ACC        "spi1"
+#define SPI_ACC_CS     4
+/* 弹仓盖舵机所挂载的 PWM 设备及通道号 */
+#define PWM_COVER        "pwm1"
+#define PWM_COVER_CH     2
 
 #endif /* _RM_CONFIG_H */
