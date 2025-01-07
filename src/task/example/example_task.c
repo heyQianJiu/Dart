@@ -12,7 +12,8 @@
 #define DBG_TAG   "rm.task"
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
-
+#define YAW_MOTOR 0
+#define PITCH_MOTOR 1
 static struct gimbal_controller_t{
     pid_obj_t *speed_pid;
     // pid_obj_t *angle_pid;
@@ -82,8 +83,8 @@ static void example_init()
 //         .MaxOut = 12000,
 // };
 
-    gimbal_controlelr[0].speed_pid = pid_register(&shoot1_speed_config);
-    gimbal_controlelr[1].speed_pid = pid_register(&shoot2_speed_config);
+    gimbal_controlelr[YAW_MOTOR].speed_pid = pid_register(&shoot1_speed_config);
+    gimbal_controlelr[PITCH_MOTOR].speed_pid = pid_register(&shoot2_speed_config);
     // gimbal_controlelr[2].speed_pid = pid_register(&shoot3_speed_config);
     // gimbal_controlelr[3].speed_pid = pid_register(&shoot4_speed_config);
 
@@ -120,8 +121,8 @@ void example_thread_entry(void *argument)
         //     shoot_motor_ref[i]=reflection;
         // }
         // reflection= 100;
-        shoot_motor_ref[0]=-1000;
-        shoot_motor_ref[1]=1000;
+        shoot_motor_ref[YAW_MOTOR]=-1000;
+        shoot_motor_ref[PITCH_MOTOR]=-1000;//+:back(high),-:toward,(high)
         // shoot_motor_ref[2]=-1000;
         // shoot_motor_ref[3]=1000;
 

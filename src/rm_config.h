@@ -155,9 +155,6 @@
 // #define SHOOT6_MOTOR_ID 0x206
 #define LOAD_MOTOR_ID 0x200//to be define
 
-
-
-
 /** SBUS遥控器发射速度 **/
 #define SBUS_FRICTION_LAUNCH_SPEED 5000
 /* 拨弹电机参数*/
