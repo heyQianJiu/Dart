@@ -303,29 +303,6 @@ menu "RoboMaster Modules"
     config BSP_USING_PS_MSG
         bool "Enable Pub Sub Message"
         default y
-
-    menuconfig BSP_USING_MAG
-        bool "Enable Magnetometer"
-        default y
-        if BSP_USING_MAG
-            config BSP_USING_IST8310
-                bool "Using IST8310"
-                default y
-        endif
-
-    menuconfig BSP_USING_IMU
-        bool "Enable IMU"
-        default y
-        if BSP_USING_IMU
-            config BSP_USING_BMI088
-                bool "Using BMI088"
-                default y
-                if BSP_USING_BMI088
-                    config BSP_BMI088_CALI
-                    bool "Calibrate BMI088 (Get more info in BMI088 README)"
-                    default n
-                endif
-        endif
     
     config BSP_USING_RC_SBUS
         bool "Enable RC SBUS"
