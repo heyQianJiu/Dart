@@ -43,13 +43,17 @@
 #define ABOVE_POLE_LEN 482.5f
 #define HEIGHT_LEN 304.3f
 #define BOTTOM_POLE_LEN 357.2f
+
+#define SQUARE_ABOVE_POLE_LEN 232806.25f
+#define SQUARE_HEIGHT_LEN  92598.49f
+#define DOUBLE_ABOVE_POLE_LEN 965.0f
 /******** YAW 3508 *******/
 /* 3508底盘电机减速比 */
 #define YAW_GEAR_RATIO (1.0f/19.0f)
 /*M2006的减速比为36:1，因此转轴旋转45度，要在转子的基础上乘36倍*/
 #define TRIGGER_MOTOR_45_TO_ANGLE 45 * 36
 /*M2006减速比*/
-#define PITCH_GEAR_RATIO 36
+#define PITCH_GEAR_RATIO (1.0f/36.0f)
 /*M2006转动一圈对应丝杆走过长度为2mm*/
 #define ANGLE_TO_DISTANCE 0.002f
 
