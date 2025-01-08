@@ -10,11 +10,11 @@
 #define HWTIMER_DEV_NAME   "timer4"     /* 定时器名称 */
 #include <rtdbg.h>
 
+#define CHASSIS_MOTOR_NUM 2
 #define SQUARE(x) ((x)*(x))
 /* -------------------------------- 线程间通讯话题相关 ------------------------------- */
 static struct chassis_cmd_msg chassis_cmd;
 static struct chassis_fdb_msg chassis_fdb;
-// static struct ins_msg ins_data;
 
 static publisher_t *pub_chassis;
 static subscriber_t *sub_cmd;
@@ -26,25 +26,20 @@ static void chassis_sub_pull(void);
 
 static float pitch_angle_cal(float total_angle);
 /* --------------------------------- 电机控制相关 --------------------------------- */
-// static pid_obj_t *follow_pid; // 用于底盘跟随云台计算vw
-// static pid_config_t chassis_follow_config = INIT_PID_CONFIG(CHASSIS_KP_V_FOLLOW, CHASSIS_KI_V_FOLLOW, CHASSIS_KD_V_FOLLOW, CHASSIS_INTEGRAL_V_FOLLOW, CHASSIS_MAX_V_FOLLOW,
-//                                                          (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
 static struct chassis_controller_t
 {
     pid_obj_t *speed_pid;
-    pid_obj_t *angle_pid;//大致调角度的话不用角度环，细调要用
-}chassis_controller[2];
+    pid_obj_t *angle_pid;
+}chassis_controller[CHASSIS_MOTOR_NUM];
 
 static dji_motor_object_t *chassis_motor[2];  // 底盘电机实例
-static int16_t motor_ref[2]; // yaw pitch 电机控制期望值
-
+static int16_t motor_ref_rpm[2]; // yaw pitch 电机控制speed期望值
+static int16_t motor_ref_angle[2];//yaw pitch   电机控制angle期望值
 static void chassis_motor_init();
 /*定时器初始化*/
 static int TIM_Init(void);
 /*角度数据*/
 static float pitch_angle,yaw_angle;
-
-
 // static void absolute_cal(struct chassis_cmd_msg *cmd, float angle);
 
 /* --------------------------------- 底盘线程入口 --------------------------------- */
@@ -79,13 +74,13 @@ void chassis_thread_entry(void *argument)
                     dji_motor_relax(chassis_motor[i]);
                 }
             break;
-            case CHASSIS_OPEN_LOOP://速度环控制的
-                motor_ref[YAW_MOTOR] = chassis_cmd.vw_yaw;
-                motor_ref[PITCH_MOTOR] = chassis_cmd.vw_pitch;
+            case CHASSIS_OPEN_LOOP://rpm or angle????
+                motor_ref_angle[YAW_MOTOR] = chassis_cmd.yaw;
+                motor_ref_angle[PITCH_MOTOR] = chassis_cmd.pitch;
                 break;
             case CHASSIS_INIT://角度环控制的
-                motor_ref[YAW_MOTOR] = CENTER_ECD_YAW;
-                motor_ref[PITCH_MOTOR] =PITCH_INIT_ANGLE;
+                motor_ref_angle[YAW_MOTOR] = CENTER_ECD_YAW;
+                motor_ref_angle[PITCH_MOTOR] =PITCH_INIT_ANGLE;
                 if(abs(chassis_motor[YAW_MOTOR]->measure.ecd - CENTER_ECD_YAW) <= 20) {
                     chassis_fdb.back_mode = BACK_IS_OK;
                 }else {
@@ -93,13 +88,13 @@ void chassis_thread_entry(void *argument)
                 }
 
             default:
-            //     for (uint8_t i = 0; i < 2; i++)
-            //     {
-            //         dji_motor_relax(chassis_motor[i]);
-            //     }
-            // break;
-                motor_ref[YAW_MOTOR] = 1000;
-                motor_ref[PITCH_MOTOR] = 1000;
+                for (uint8_t i = 0; i < 2; i++)
+                {
+                    dji_motor_relax(chassis_motor[i]);
+                }
+            break;
+                // motor_ref[YAW_MOTOR] = 1000;
+                // motor_ref[PITCH_MOTOR] = 1000;
         }
 
         /* 更新发布该线程的msg */
@@ -149,15 +144,37 @@ static void chassis_sub_pull(void)
 static rt_int16_t motor_control_yaw(dji_motor_measure_t measure)
 {
     static rt_int16_t set = 0;
-    set =(rt_int16_t) pid_calculate(chassis_controller[YAW_MOTOR].speed_pid, measure.speed_rpm, motor_ref[YAW_MOTOR]);
+    set =(rt_int16_t) pid_calculate(chassis_controller[YAW_MOTOR].speed_pid, measure.speed_rpm, motor_ref_rpm[YAW_MOTOR]);
     return set;
 }
 
 static rt_int16_t motor_control_pitch(dji_motor_measure_t measure)
 {
-    static rt_int16_t set = 0;
-    set =(rt_int16_t) pid_calculate(chassis_controller[PITCH_MOTOR].speed_pid, measure.speed_rpm, motor_ref[PITCH_MOTOR]);
-    return set;
+    /* PID局部指针，切换不同模式下PID控制器 */
+    static pid_obj_t *pid_angle;
+    static pid_obj_t *pid_speed;
+    static float get_speed, get_angle;  // 闭环反馈量
+    static float pid_out_angle;         // 角度环输出
+    static rt_int16_t send_data;        // 最终发送给电调的数据
+    /* 根据云台模式，切换对应的控制器及观测量 */
+
+    pid_speed = chassis_controller[PITCH_MOTOR].speed_pid;
+    pid_angle = chassis_controller[PITCH_MOTOR].angle_pid;
+    get_speed = chassis_motor[PITCH_MOTOR]->measure.speed_rpm;
+    get_angle = pitch_angle;
+
+    /* 切换模式需要清空  控制器历史状态 */
+    if(chassis_cmd.ctrl_mode != chassis_cmd.last_mode)
+    {
+        pid_clear(pid_angle);
+        pid_clear(pid_speed);
+    }
+    /*串级pid的使用，角度环套在速度环上面*/
+    /* 注意负号 */
+    pid_out_angle = pid_calculate(pid_angle, get_angle, motor_ref_angle[PITCH_MOTOR]);
+    send_data = pid_calculate(pid_speed, get_speed, pid_out_angle);
+
+    return send_data;
 }
 /* 底盘每个电机对应的控制函数 */
 static void *motor_control[2] =
