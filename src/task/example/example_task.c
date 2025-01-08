@@ -17,12 +17,12 @@
 static struct gimbal_controller_t{
     pid_obj_t *speed_pid;
     // pid_obj_t *angle_pid;
-}gimbal_controlelr[2];
+}gimbal_controlelr[3];
 static dji_motor_object_t *shoot_motor1;
 static dji_motor_object_t *shoot_motor2;
-// static dji_motor_object_t *shoot_motor3;
+static dji_motor_object_t *shoot_motor3;
 // static dji_motor_object_t *shoot_motor4;
-static float shoot_motor_ref[2];
+static float shoot_motor_ref[3];
 // static float reflection;
 
 static rt_int16_t shoot_control1(dji_motor_measure_t measure){
@@ -34,13 +34,12 @@ static rt_int16_t shoot_control2(dji_motor_measure_t measure){
     static rt_int16_t set = 0;
     set = pid_calculate(gimbal_controlelr[1].speed_pid, measure.speed_rpm, shoot_motor_ref[1]);
     return set;
-
 }
-// static rt_int16_t shoot_control3(dji_motor_measure_t measure){
-//     static rt_int16_t set = 0;
-//     set = pid_calculate(gimbal_controlelr[2].speed_pid, measure.speed_rpm, shoot_motor_ref[2]);
-//     return set;
-// }
+static rt_int16_t shoot_control3(dji_motor_measure_t measure){
+    static rt_int16_t set = 0;
+    set = pid_calculate(gimbal_controlelr[2].speed_pid, measure.speed_rpm, shoot_motor_ref[2]);
+    return set;
+}
 //
 // static rt_int16_t shoot_control4(dji_motor_measure_t measure){
 //     static rt_int16_t set = 0;
@@ -66,14 +65,14 @@ static void example_init()
         .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
         .MaxOut = 12000,
 };
-//     pid_config_t shoot3_speed_config = {
-//         .Kp = 10, // 4.5
-//         .Ki = 0,  // 0
-//         .Kd = 0,  // 0
-//         .IntegralLimit = 3000,
-//         .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-//         .MaxOut = 12000,
-// };
+    pid_config_t shoot3_speed_config = {
+        .Kp = 10, // 4.5
+        .Ki = 0,  // 0
+        .Kd = 0,  // 0
+        .IntegralLimit = 3000,
+        .Improve = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
+        .MaxOut = 12000,
+};
 //     pid_config_t shoot4_speed_config = {
 //         .Kp = 10, // 4.5
 //         .Ki = 0,  // 0
@@ -85,7 +84,7 @@ static void example_init()
 
     gimbal_controlelr[YAW_MOTOR].speed_pid = pid_register(&shoot1_speed_config);
     gimbal_controlelr[PITCH_MOTOR].speed_pid = pid_register(&shoot2_speed_config);
-    // gimbal_controlelr[2].speed_pid = pid_register(&shoot3_speed_config);
+    gimbal_controlelr[2].speed_pid = pid_register(&shoot3_speed_config);
     // gimbal_controlelr[3].speed_pid = pid_register(&shoot4_speed_config);
 
     motor_config_t shoot1_motor_config = {
@@ -100,9 +99,16 @@ static void example_init()
         .rx_id = 0x207,
         .controller = &gimbal_controlelr[1],
 };
+    motor_config_t shoot3_motor_config = {
+        .motor_type = M2006,
+        .can_name = CAN_CHASSIS,
+        .rx_id = 0x206,
+        .controller = &gimbal_controlelr[2],
+};
 
     shoot_motor1 = dji_motor_register(&shoot1_motor_config, shoot_control1);
     shoot_motor2 = dji_motor_register(&shoot2_motor_config, shoot_control2);
+    shoot_motor3 = dji_motor_register(&shoot3_motor_config,shoot_control3);
 
 }
 
@@ -110,7 +116,10 @@ void example_thread_entry(void *argument)
 {
     static float example_dt;
     static float example_start;
-
+    static float ref_yaw,ref_pitch,ref_load;
+    ref_yaw=500;
+    ref_pitch=500;
+    ref_load=500;
 
     example_init();
     LOG_I("Example Task Start");
@@ -121,8 +130,9 @@ void example_thread_entry(void *argument)
         //     shoot_motor_ref[i]=reflection;
         // }
         // reflection= 100;
-        shoot_motor_ref[YAW_MOTOR]=-1000;
-        shoot_motor_ref[PITCH_MOTOR]=-1000;//+:back(high),-:toward,(high)
+        shoot_motor_ref[YAW_MOTOR]=ref_pitch;
+        shoot_motor_ref[PITCH_MOTOR]=ref_yaw;//+:back(high),-:toward,(high)
+        shoot_motor_ref[2]=ref_load;
         // shoot_motor_ref[2]=-1000;
         // shoot_motor_ref[3]=1000;
 
