@@ -365,10 +365,6 @@
 #define BSP_USING_DJI_MOTOR
 #define BSP_USING_DWT
 #define BSP_USING_PS_MSG
-#define BSP_USING_MAG
-#define BSP_USING_IST8310
-#define BSP_USING_IMU
-#define BSP_USING_BMI088
 #define BSP_USING_RC_SBUS
 #define BSP_USING_REFEREE
 /* end of RoboMaster Modules */
