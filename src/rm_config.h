@@ -92,14 +92,15 @@
 /* 云台yaw轴编码器归中值 */
 #define CENTER_ECD_YAW   7913
 #define SIDEWAYS_ANGLE   0
+#define YAW_ANGLE_MAX 15//to be define
 #endif
 
 /* 云台pitch轴编码器归中值 */
 #define CENTER_ECD_PITCH 2717
 /* pitch轴最大仰角 */
-#define PIT_ANGLE_MAX    30.0f
+#define PIT_ANGLE_MAX    45.0f
 /* pitch轴最大俯角 */
-#define PIT_ANGLE_MIN    0
+#define PIT_ANGLE_MIN    30.0f
 
 /* 云台控制周期 (ms) */
 #define GIMBAL_PERIOD 1
