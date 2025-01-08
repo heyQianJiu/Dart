@@ -221,7 +221,7 @@ static float pitch_angle_cal(float total_angle)
     abs_limit(screw_distance, SCREW_LEN);
     if(screw_distance < 0)screw_distance = 0;
     total_distance = BOTTOM_POLE_LEN + screw_distance;
-    rad = acos( (SQUARE_ABOVE_POLE_LEN + SQUARE(total_distance) - SQUARE_HEIGHT_LEN) / DOUBLE_ABOVE_POLE_LEN * total_distance );
+    rad = acos( (SQUARE_ABOVE_POLE_LEN + SQUARE(total_distance) - SQUARE_HEIGHT_LEN) / (DOUBLE_ABOVE_POLE_LEN * total_distance) );
     return rad * PI / 180.0f;//转化为角度
 }
 int TIM_Init(void)
