@@ -3,12 +3,14 @@
 #include "rm_algorithm.h"
 #include "rm_module.h"
 #include "rm_task.h"
+#include <math.h>
 
 #define DBG_TAG   "rm.task"
 #define DBG_LVL DBG_INFO
 #define HWTIMER_DEV_NAME   "timer4"     /* 定时器名称 */
 #include <rtdbg.h>
 
+#define SQUARE(x) ((x)*(x))
 /* -------------------------------- 线程间通讯话题相关 ------------------------------- */
 static struct chassis_cmd_msg chassis_cmd;
 static struct chassis_fdb_msg chassis_fdb;
@@ -22,6 +24,7 @@ static void chassis_sub_init(void);
 static void chassis_pub_push(void);
 static void chassis_sub_pull(void);
 
+static float pitch_angle_cal(float total_angle);
 /* --------------------------------- 电机控制相关 --------------------------------- */
 // static pid_obj_t *follow_pid; // 用于底盘跟随云台计算vw
 // static pid_config_t chassis_follow_config = INIT_PID_CONFIG(CHASSIS_KP_V_FOLLOW, CHASSIS_KI_V_FOLLOW, CHASSIS_KD_V_FOLLOW, CHASSIS_INTEGRAL_V_FOLLOW, CHASSIS_MAX_V_FOLLOW,
@@ -43,12 +46,6 @@ static float pitch_angle,yaw_angle;
 
 
 // static void absolute_cal(struct chassis_cmd_msg *cmd, float angle);
-// static struct chassis_real_speed_t
-// {
-//     float chassis_vx_ch;
-//     float chassis_vy_ch;
-//     // float chassis_vw_ch;
-// }chassis_real_speed;
 
 /* --------------------------------- 底盘线程入口 --------------------------------- */
 static float cmd_dt;
@@ -89,7 +86,7 @@ void chassis_thread_entry(void *argument)
             case CHASSIS_INIT://角度环控制的
                 motor_ref[YAW_MOTOR] = CENTER_ECD_YAW;
                 motor_ref[PITCH_MOTOR] =PITCH_INIT_ANGLE;
-                if(chassis_motor[YAW_MOTOR]->measure.ecd - CENTER_ECD_YAW <= 20) {
+                if(abs(chassis_motor[YAW_MOTOR]->measure.ecd - CENTER_ECD_YAW) <= 20) {
                     chassis_fdb.back_mode = BACK_IS_OK;
                 }else {
                     chassis_fdb.back_mode = BACK_STEP;
@@ -208,11 +205,24 @@ static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
 {
     yaw_angle = chassis_motor[YAW_MOTOR]->measure.total_angle * YAW_GEAR_RATIO;// 总角度 * 减速比 = 实际角度,正为顺时针,负为逆时针
     // yaw_degree = (chassis_motor[YAW_MOTOR]->measure.total_angle - CENTER_ECD_YAW ) * TRIGGER_MOTOR_45_TO_ANGLE;
-
+    pitch_angle = pitch_angle_cal(chassis_motor[PITCH_MOTOR]->measure.total_angle);
 
     chassis_fdb.yaw_degree = yaw_angle;
-    // chassis_fdb.pitch_degree = pitch_angle;
+    chassis_fdb.pitch_degree = pitch_angle;
     return 0;
+}
+
+static float pitch_angle_cal(float total_angle)
+{
+    static float rad;
+    static float screw_distance;
+    static float total_distance;
+    screw_distance = total_angle * PITCH_GEAR_RATIO * ANGLE_TO_DISTANCE;
+    abs_limit(screw_distance, SCREW_LEN);
+    if(screw_distance < 0)screw_distance = 0;
+    total_distance = BOTTOM_POLE_LEN + screw_distance;
+    rad = acos( (SQUARE_ABOVE_POLE_LEN + SQUARE(total_distance) - SQUARE_HEIGHT_LEN) / DOUBLE_ABOVE_POLE_LEN * total_distance );
+    return rad*3.1415;
 }
 int TIM_Init(void)
 {
