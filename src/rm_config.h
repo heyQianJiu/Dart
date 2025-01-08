@@ -107,6 +107,9 @@
 /* 云台回中初始化时间 (ms) */
 #define BACK_CENTER_TIME 100
 
+/*供弹电机相关*/
+#define LOAD_MAX_DISTANCE 1000.0f
+#define LOAD_INIT_DISTANCE 0
 /* -------------------------------- 云台电机PID参数 ------------------------------- */
 /* yaw轴电机PID参数 */
 /* 速度环 */
@@ -145,7 +148,7 @@
 #define SHOOT4_MOTOR_ID 0x204
 // #define SHOOT5_MOTOR_ID 0x205
 // #define SHOOT6_MOTOR_ID 0x206
-#define LOAD_MOTOR_ID 0x205//to be define
+#define LOAD_MOTOR_ID 0x205
 
 /** SBUS遥控器发射速度 **/
 #define SBUS_FRICTION_LAUNCH_SPEED 5000

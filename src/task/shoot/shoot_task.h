@@ -20,7 +20,7 @@ typedef enum
     /*发射模式*/
   SHOOT_STOP=0        ,     //射击关闭
   SHOOT_ONE=1         ,     //单发模式
-  SHOOT_REVERSE=2     ,     //堵弹反转
+  SHOOT_REVERSE=2     ,     //电机回归初始位置
 } shoot_mode_e;
 /**
  * @brief 扳机模式
