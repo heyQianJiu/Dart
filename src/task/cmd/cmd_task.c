@@ -149,19 +149,12 @@ static void remote_to_cmd_sbus(void)
             chassis_cmd.vw_yaw = 2000*(float)(rc_now->ch1) / 784.0;
             chassis_cmd.vw_pitch = 2000*(float)(rc_now->ch2) / 784.0;;
             break;
-        case RC_MI://先归中再失能
-            if(chassis_cmd.last_mode != CHASSIS_INIT) {
-                chassis_cmd.ctrl_mode = CHASSIS_INIT;
-            }
-            else if(chassis_fdb.back_mode == BACK_IS_OK)
-            {
-                chassis_cmd.ctrl_mode = CHASSIS_RELAX;
-            }
+        case RC_MI://直接失能，不用归中
+            chassis_cmd.ctrl_mode = CHASSIS_RELAX;
+
             break;
         default:
             chassis_cmd.ctrl_mode = CHASSIS_RELAX;
-
-
     }
     /* 因为左拨杆值会影响到底盘RELAX状态，所以后判断 */
     switch(rc_now->sw4)
@@ -169,7 +162,11 @@ static void remote_to_cmd_sbus(void)
         case RC_UP:
             break;
         case RC_MI:
-            chassis_cmd.ctrl_mode = CHASSIS_RELAX;
+            if(chassis_cmd.last_mode != CHASSIS_INIT) {
+                chassis_cmd.ctrl_mode = CHASSIS_INIT;
+            }else {
+                chassis_cmd.ctrl_mode = CHASSIS_RELAX;
+            }
             shoot_cmd.ctrl_mode = SHOOT_STOP;
             shoot_cmd.friction_status = 0;
             break;
