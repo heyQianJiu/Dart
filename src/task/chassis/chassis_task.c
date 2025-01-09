@@ -210,13 +210,13 @@ static void chassis_motor_init()
     chassis_controller[PITCH_MOTOR].speed_pid = pid_register(&pitch_speed_config);
     chassis_motor[YAW_MOTOR] = dji_motor_register(&chassis_motor_config[YAW_MOTOR], motor_control[YAW_MOTOR]);
     chassis_motor[PITCH_MOTOR] = dji_motor_register(&chassis_motor_config[YAW_MOTOR], motor_control[PITCH_MOTOR]);
-    //角度环
-    pid_config_t yaw_angle_config = INIT_PID_CONFIG(YAW_KP_A,YAW_KI_A,YAW_KD_A,YAW_INTEGRAL_A,YAW_MAX_A,
-                                                        (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
-    chassis_controller[YAW_MOTOR].angle_pid = pid_register(&yaw_angle_config);
-    pid_config_t pitch_angle_config = INIT_PID_CONFIG(PITCH_KP_A,PITCH_KI_A,PITCH_KD_A,PITCH_INTEGRAL_A,PITCH_MAX_A,
-                                                        (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
-    chassis_controller[PITCH_MOTOR].angle_pid = pid_register(&pitch_angle_config);
+    // //角度环
+    // pid_config_t yaw_angle_config = INIT_PID_CONFIG(YAW_KP_A,YAW_KI_A,YAW_KD_A,YAW_INTEGRAL_A,YAW_MAX_A,
+    //                                                     (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
+    // chassis_controller[YAW_MOTOR].angle_pid = pid_register(&yaw_angle_config);
+    // pid_config_t pitch_angle_config = INIT_PID_CONFIG(PITCH_KP_A,PITCH_KI_A,PITCH_KD_A,PITCH_INTEGRAL_A,PITCH_MAX_A,
+    //                                                     (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
+    // chassis_controller[PITCH_MOTOR].angle_pid = pid_register(&pitch_angle_config);
 }
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
 {

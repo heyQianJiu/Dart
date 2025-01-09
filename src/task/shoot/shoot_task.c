@@ -232,10 +232,10 @@ sht_controller[SHOOT_MOTOR4].pid_speed = pid_register(&shoot4_speed_config);
 /* ------------------------------------------------  供弹电机------------------------------------------------------------------------- */
     pid_config_t load_speed_config = INIT_PID_CONFIG(TRIGGER_KP_V  , TRIGGER_KI_V , TRIGGER_KD_V  , TRIGGER_INTEGRAL_V, TRIGGER_MAX_V ,
                                                        (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
-    pid_config_t load_angle_config = INIT_PID_CONFIG(TRIGGER_KP_A, TRIGGER_KI_A, TRIGGER_KD_A, TRIGGER_INTEGRAL_A , TRIGGER_MAX_A ,
-                                                       (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
+    // pid_config_t load_angle_config = INIT_PID_CONFIG(TRIGGER_KP_A, TRIGGER_KI_A, TRIGGER_KD_A, TRIGGER_INTEGRAL_A , TRIGGER_MAX_A ,
+    //                                                    (PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement));
     load_controller.pid_speed = pid_register(&load_speed_config);
-    load_controller.pid_angle = pid_register(&load_angle_config);
+    // load_controller.pid_angle = pid_register(&load_angle_config);
 
 /* ---------------------------------- shoot电机初注册---------------------------------------------------------------------------------------- */
     sht_motor[SHOOT_MOTOR1] = dji_motor_register(&shoot_motor_config[SHOOT_MOTOR1], shoot_control_1);
@@ -243,7 +243,7 @@ sht_controller[SHOOT_MOTOR4].pid_speed = pid_register(&shoot4_speed_config);
     sht_motor[SHOOT_MOTOR3] = dji_motor_register(&shoot_motor_config[SHOOT_MOTOR3], shoot_control_3);
     sht_motor[SHOOT_MOTOR4] = dji_motor_register(&shoot_motor_config[SHOOT_MOTOR3], shoot_control_4);
 
-    load_motor = dji_motor_register(&load_motor_config,load_motor);
+    load_motor = dji_motor_register(&load_motor_config,load_control);
 }
 
 /* ---------------------------------- shoot电机控制算法---------------------------------------------------------------------------------------- */
@@ -271,43 +271,13 @@ static rt_int16_t shoot_control_4(dji_motor_measure_t measure)
     set = (int16_t) pid_calculate(sht_controller[SHOOT_MOTOR4].pid_speed, measure.speed_rpm, shoot_motor_ref[SHOOT_MOTOR4]);
     return set;
 }
-
-/*拨弹电机控制算法*/
-static rt_int16_t load_motor_control(dji_motor_measure_t measure)
+static rt_int16_t load_control(dji_motor_measure_t measure)
 {
-    /* PID局部指针，切换不同模式下PID控制器 */
-    static pid_obj_t *pid_location;
-    static pid_obj_t *pid_speed;
-    static float get_speed, get_location;  // 闭环反馈量
-    static float pid_out_location;         // 角度环输出
-    static rt_int16_t send_data;        // 最终发送给电调的数据
-
-    /*拨弹电机采用串级pid，一个角度环和一个速度环*/
-    pid_speed = load_controller.pid_speed;
-    pid_location = load_controller.pid_angle;
-    get_location = measure.total_angle * PITCH_GEAR_RATIO * ANGLE_TO_DISTANCE;//load也是2006，减速比同PITCH
-    get_speed = measure.speed_rpm;
-
-    /* 切换模式需要清空控制器历史状态 */
-    if(shoot_cmd.ctrl_mode != shoot_cmd.last_mode)
-    {
-        pid_clear(pid_location);
-        pid_clear(pid_speed);
-    }
-
-    /*pid计算输出*/
-    if (shoot_cmd.ctrl_mode==SHOOT_ONE) //非连发模式的时候，用双环pid控制拨弹电机
-    {
-        pid_out_location = (int16_t) pid_calculate(pid_location, get_location, load_ref_distance);
-        send_data = (int16_t) pid_calculate(pid_speed, get_speed, pid_out_location);
-    }
-    /*pid计算输出*/
-    else if(shoot_cmd.ctrl_mode==SHOOT_STOP||shoot_cmd.ctrl_mode==SHOOT_REVERSE)//自动模式的时候，只用速度环控制拨弹电机
-    {
-        send_data = (int16_t) pid_calculate(pid_speed, get_speed, load_ref_rpm);
-    }
-    return send_data;
+    static rt_int16_t set = 0;
+    set = (int16_t) pid_calculate(load_controller.pid_speed, measure.speed_rpm, load_ref_rpm);
+    return set;
 }
+
 
 /**
  * @brief shoot 线程中所有发布者初始化
@@ -337,3 +307,39 @@ static void shoot_sub_pull()
 {
     sub_get_msg(sub_cmd, &shoot_cmd);
 }
+/*拨弹电机双环控制算法*/
+// static rt_int16_t load_motor_control(dji_motor_measure_t measure)
+// {
+//     /* PID局部指针，切换不同模式下PID控制器 */
+//     static pid_obj_t *pid_location;
+//     static pid_obj_t *pid_speed;
+//     static float get_speed, get_location;  // 闭环反馈量
+//     static float pid_out_location;         // 角度环输出
+//     static rt_int16_t send_data;        // 最终发送给电调的数据
+//
+//     /*拨弹电机采用串级pid，一个角度环和一个速度环*/
+//     pid_speed = load_controller.pid_speed;
+//     pid_location = load_controller.pid_angle;
+//     get_location = measure.total_angle * PITCH_GEAR_RATIO * ANGLE_TO_DISTANCE;//load也是2006，减速比同PITCH
+//     get_speed = measure.speed_rpm;
+//
+//     /* 切换模式需要清空控制器历史状态 */
+//     if(shoot_cmd.ctrl_mode != shoot_cmd.last_mode)
+//     {
+//         pid_clear(pid_location);
+//         pid_clear(pid_speed);
+//     }
+//
+//     /*pid计算输出*/
+//     if (shoot_cmd.ctrl_mode==SHOOT_ONE) //非连发模式的时候，用双环pid控制拨弹电机
+//     {
+//         pid_out_location = (int16_t) pid_calculate(pid_location, get_location, load_ref_distance);
+//         send_data = (int16_t) pid_calculate(pid_speed, get_speed, pid_out_location);
+//     }
+//     /*pid计算输出*/
+//     else if(shoot_cmd.ctrl_mode==SHOOT_STOP||shoot_cmd.ctrl_mode==SHOOT_REVERSE)//自动模式的时候，只用速度环控制拨弹电机
+//     {
+//         send_data = (int16_t) pid_calculate(pid_speed, get_speed, load_ref_rpm);
+//     }
+//     return send_data;
+// }
